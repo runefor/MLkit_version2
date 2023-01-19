@@ -181,12 +181,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var cameraExecutor: ExecutorService
 
-    private lateinit var textView : TextView;
-    private lateinit var rect_overlay : RectOverlay;
-    private lateinit var viewFinder : PreviewView;
+    private lateinit var textView : TextView
+    private lateinit var rect_overlay : RectOverlay
+    private lateinit var viewFinder : PreviewView
+
+    private val readCSV = csvRead1()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
+        Log.i("read csv", readCSV.toString())
 
         if (allPermissionsGranted()) {
             thread {
@@ -215,20 +221,67 @@ class MainActivity : AppCompatActivity() {
 
 
 
-    fun csvRead(){
-        try {
+//    private fun csvRead(): List<String>? {
+//        return try {
+//            val assetManager : AssetManager = this.assets
+//            val inputStream = assetManager.open("nxde.csv")
+//            val reader = CSVReader(InputStreamReader(inputStream))
+//            val allContent = reader.readAll()
+//            Log.i("data_be",allContent[i].toList().toString())
+//            i++
+//
+//            // return
+//            allContent[i].toList()
+//        }catch (e: java.lang.Exception){
+//            Log.e("csv_bug", e.toString())
+//            // return
+//            null
+//        }
+//    }
+
+    private fun csvRead(): List<String>? {
+        return try {
             val assetManager : AssetManager = this.assets
             val inputStream = assetManager.open("nxde.csv")
             val reader = CSVReader(InputStreamReader(inputStream))
             val allContent = reader.readAll()
-            Log.i("vlog",allContent[i].toList().toString())
+            Log.i("data_be",allContent[i].toList().toString())
             i++
+
+            // return
+            allContent[i].toList()
         }catch (e: java.lang.Exception){
-            Log.i("vlog", e.toString());
+            Log.e("csv_bug", e.toString())
+            // return
+            null
         }
-
-
     }
+
+    private fun csvRead1(): List<String>? {
+        return try {
+            val assetManager : AssetManager = this.assets
+            val inputStream = assetManager.open("nxde.csv")
+            val reader = CSVReader(InputStreamReader(inputStream))
+            val allContent = reader.readAll()
+
+            var resultCSV = ArrayList<String>()
+            for(content in allContent){
+                resultCSV.add(content.toList().toString())
+            }
+
+//            Log.i("read csv1", resultCSV.toString())
+
+            // return
+            resultCSV
+        }catch (e: java.lang.Exception){
+            Log.e("csv_bug", e.toString())
+            // return
+            null
+        }
+    }
+
+//    private val readCSV = csvRead1()
+
     fun getAngle(firstPoint: PoseLandmark, midPoint: PoseLandmark, lastPoint: PoseLandmark): Double {
 
         var result = Math.toDegrees(
@@ -354,29 +407,39 @@ class MainActivity : AppCompatActivity() {
             }
 
             //왼쪽 가슴 11,23,25
-
-            if(leftShoulder != null && leftHip != null && leftKnee != null){
-                var leftChestAngle = getAngle(leftShoulder, leftHip, leftKnee);
-                builder.append("${leftChestAngle.toInt()} 왼쪽 가슴 \n")
+            var leftChestAngle = if( leftShoulder != null && leftHip != null  && leftKnee != null){
+                var result = getAngle( leftShoulder, leftHip, leftKnee)
+                builder.append("${result.toInt()} 왼쪽 가슴 \n")
+                result
+            } else {
+                0
             }
-            // 오른쪽 가슴 12,24,26
 
-            if(rightShoulder != null && rightHip != null && rightKnee != null){
-                var rightChestAngle = getAngle(rightShoulder, rightHip, rightKnee);
-                builder.append("${rightChestAngle.toInt()} 오른쪽 가슴 \n")
+            // 오른쪽 가슴 12,24,26
+            var rightChestAngle = if( rightShoulder != null && rightHip != null  && rightKnee != null){
+                var result = getAngle( rightShoulder, rightHip, rightKnee)
+                builder.append("${result.toInt()} 오른쪽 가슴 \n")
+                result
+            } else {
+                0
             }
 
             //왼쪽 다리 23,25,27
-
-            if( leftHip != null && leftKnee != null  && leftAnkle != null){
-                var leftLegAngle = getAngle( leftHip, leftKnee,leftAnkle);
-                builder.append("${leftLegAngle.toInt()} 왼쪽 다리 \n")
+            var leftLegAngle = if( leftHip != null && leftKnee != null  && leftAnkle != null){
+                var result = getAngle( leftHip, leftKnee, leftAnkle)
+                builder.append("${result.toInt()} 왼쪽 다리 \n")
+                result
+            } else {
+                0
             }
-            //오른쪽 다리 24,26,28
 
-            if( rightHip != null && rightKnee != null  && rightAnkle != null){
-                var rightLegAngle = getAngle( rightHip, rightKnee, rightAnkle);
-                builder.append("${ rightLegAngle.toInt()} 오른쪽 다리 \n")
+            //오른쪽 다리 24,26,28
+            var rightLegAngle = if( rightHip != null && rightKnee != null  && rightAnkle != null){
+                var result = getAngle( rightHip, rightKnee, rightAnkle)
+                builder.append("${result.toInt()} 오른쪽 다리 \n")
+                result
+            } else {
+                0
             }
 
             // 왼쪽 어깨 13,11,23
@@ -391,39 +454,55 @@ class MainActivity : AppCompatActivity() {
                 var rightShoulderAngle = getAngle( rightElbow, rightShoulder,rightHip);
                 builder.append("${rightShoulderAngle.toInt()} 오른쪽 어깨 \n")
             }
+
             // 왼쪽 팔 11,13,15
-
-            if( leftShoulder != null && leftWrist != null  && leftElbow != null){
-                var leftArmAngle = getAngle( leftShoulder, leftElbow,leftWrist);
-                builder.append("${leftArmAngle.toInt()} 왼쪽 팔 \n")
-            }
-            // 오른쪽 팔 12,14,16
-
-            var rightArmAngle = if( rightShoulder != null && rightWrist != null  && rightElbow != null){
-                var rightArmAngle = getAngle( rightShoulder, rightElbow,rightWrist);
-                builder.append("${rightArmAngle.toInt()} 오른쪽 팔 \n")
-                rightArmAngle
+            var leftArmAngle = if( leftShoulder != null && leftElbow != null  && leftWrist != null){
+                var result = getAngle( leftShoulder, leftElbow, leftWrist)
+                builder.append("${result.toInt()} 왼쪽 팔 \n")
+                result
             } else {
-                null
+                0
             }
-            if (leftNeckAngle != null && rightNeckAngle != null) {
-                if((leftNeckAngle.toInt() in 103 .. 109 )&& (rightNeckAngle.toInt() in 103 .. 109 )){
 
-                }
+            // 오른쪽 팔 12,14,16
+            var rightArmAngle = if( rightShoulder != null && rightElbow != null  && rightWrist != null){
+                var result = getAngle( rightShoulder, rightElbow,rightWrist)
+                builder.append("${result.toInt()} 오른쪽 팔 \n")
+                result
+            } else {
+                0
+            }
 
-                //                &&(169<=leftChestAngle.toInt() && leftChestAngle.toInt()<= 175 )
-                //                &&(155<=rightChestAngle.toInt()&& rightChestAngle.toInt()<= 161 )
-                //                &&(167<=leftLegAngle.toInt()&& leftLegAngle.toInt()<= 173 )
-                //                &&(149<=rightLegAngle.toInt()&& rightLegAngle.toInt()<= 155 )
-                //                &&(35<=leftArmAngle.toInt()&& leftArmAngle.toInt()<= 41 )
-                //                &&(90<=rightArmAngle.toInt()&& rightArmAngle.toInt()<= 96 )){
-                //                Toast.makeText(this@MainActivity, "일치합니다", Toast.LENGTH_SHORT).show()
-                //            }
-                //왼쪽 다리 모서리
-                    thread {
-                        csvRead()
+
+            thread {
+                val dataRe = csvRead()
+
+                Log.i("data_re", dataRe.toString())
+                dataRe?.get(0)
+
+                if (leftNeckAngle != null && rightNeckAngle != null) {
+                    if(
+                        (leftNeckAngle.toInt() in 103 .. 109 ) &&
+                        (rightNeckAngle.toInt() in 103 .. 109 )){
+
+                        if(
+                            (leftNeckAngle.toInt() in 103 .. 109 ) &&
+                            (rightNeckAngle.toInt() in 61 .. 67 ) &&
+                            (leftChestAngle.toInt() in 169 .. 175 ) &&
+                            (rightChestAngle.toInt() in 155 .. 161 ) &&
+                            (leftLegAngle.toInt() in 167 .. 173 ) &&
+                            (rightLegAngle.toInt() in 149 .. 155 ) &&
+                            (leftArmAngle.toInt() in 35 .. 41 ) &&
+                            (rightArmAngle in 90 .. 96 )
+                        )
+                        {
+                            Toast.makeText(this@MainActivity, "일치합니다", Toast.LENGTH_SHORT).show()
+                        }
                     }
+                }
             }
+
+
 
 
 
