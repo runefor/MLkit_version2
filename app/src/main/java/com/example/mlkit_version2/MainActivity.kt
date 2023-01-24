@@ -185,13 +185,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rect_overlay : RectOverlay
     private lateinit var viewFinder : PreviewView
 
-    private val readCSV = csvRead1()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
 
+        val readCSV = csvRead1()
         Log.i("read csv", readCSV.toString())
 
         if (allPermissionsGranted()) {
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity() {
     private fun csvRead1(): List<String>? {
         return try {
             val assetManager : AssetManager = this.assets
-            val inputStream = assetManager.open("nxde.csv")
+            val inputStream = assetManager.open("revers.csv")
             val reader = CSVReader(InputStreamReader(inputStream))
             val allContent = reader.readAll()
 
