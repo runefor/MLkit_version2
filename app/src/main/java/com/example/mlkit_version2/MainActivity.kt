@@ -2,27 +2,25 @@ package com.example.mlkit_version2
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
-import android.content.res.Resources.NotFoundException
 import android.graphics.*
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewConfiguration
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.mlkit_version2.csv.CsvController
+import com.example.mlkit_version2.csv.CsvData
+import com.example.mlkit_version2.csv.CsvHelper
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
@@ -30,11 +28,7 @@ import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import com.google.mlkit.vision.pose.PoseLandmark
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
 import com.opencsv.CSVReader
-import java.io.File
-import java.io.InputStream
 import java.io.InputStreamReader
-import java.util.Timer
-import java.util.TimerTask
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
@@ -176,6 +170,7 @@ class RectOverlay constructor(context: Context?, attributeSet: AttributeSet?) :
 }
 
 class MainActivity : AppCompatActivity() {
+
     private var imageCapture: ImageCapture? = null
 
 
@@ -185,14 +180,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var rect_overlay : RectOverlay
     private lateinit var viewFinder : PreviewView
 
+    private var csvHelper = CsvHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        csvTest = csvRead31(this.assets)
 
-        val readCSV = csvRead1()
-        Log.i("read csv", readCSV.toString())
+//        val readCSV = csvRead1()
+//        Log.i("read csv", readCSV.toString())
 
         if (allPermissionsGranted()) {
             thread {
@@ -219,25 +216,6 @@ class MainActivity : AppCompatActivity() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
-
-
-//    private fun csvRead(): List<String>? {
-//        return try {
-//            val assetManager : AssetManager = this.assets
-//            val inputStream = assetManager.open("nxde.csv")
-//            val reader = CSVReader(InputStreamReader(inputStream))
-//            val allContent = reader.readAll()
-//            Log.i("data_be",allContent[i].toList().toString())
-//            i++
-//
-//            // return
-//            allContent[i].toList()
-//        }catch (e: java.lang.Exception){
-//            Log.e("csv_bug", e.toString())
-//            // return
-//            null
-//        }
-//    }
 
     private fun csvRead(): List<String>? {
         return try {
@@ -475,10 +453,16 @@ class MainActivity : AppCompatActivity() {
 
 
             thread {
-                val dataRe = csvRead()
 
-                Log.i("data_re", dataRe.toString())
-                dataRe?.get(0)
+                val resultCSV = CsvData()
+                resultCSV.log()
+
+                resultCSV.dataGet()?.get(0)
+
+//                val dataRe = csvRead()
+//
+//                Log.i("data_re", dataRe.toString())
+//                dataRe?.get(0)
 
                 if (leftNeckAngle != null && rightNeckAngle != null) {
                     if(
@@ -679,7 +663,29 @@ class MainActivity : AppCompatActivity() {
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
+        var csvTest : List<String>? = null
+        fun csvRead31(assets : AssetManager): List<String>? {
+            return try {
+                val assetManager : AssetManager = assets
+                val inputStream = assetManager.open("revers.csv")
+                val reader = CSVReader(InputStreamReader(inputStream))
+                val allContent = reader.readAll()
 
+                val resultCSV = ArrayList<String>()
+                for(content in allContent){
+                    resultCSV.add(content.toList().toString())
+                }
+
+//            Log.i("read csv1", resultCSV.toString())
+
+                // return
+                resultCSV
+            }catch (e: java.lang.Exception){
+                Log.e("csv_bug", e.toString())
+                // return
+                null
+            }
+        }
 
 
     }
