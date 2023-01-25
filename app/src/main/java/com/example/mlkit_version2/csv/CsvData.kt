@@ -11,6 +11,6 @@ class CsvData {
     }
 
     fun dataGet(): List<String>? {
-        return data
+        return data?.toList()
     }
 }

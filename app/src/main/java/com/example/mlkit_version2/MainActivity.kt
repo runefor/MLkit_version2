@@ -35,6 +35,7 @@ import kotlin.concurrent.thread
 import kotlin.math.atan2
 
 var i = 0
+var j = 0
 
 private class PoseAnalyzer(private val poseFoundListener: (Pose) -> Unit) : ImageAnalysis.Analyzer {
 
@@ -365,28 +366,28 @@ class MainActivity : AppCompatActivity() {
 
             // 왼쪽 목 7,11
 
-            var leftNeckAngle = if(leftEar != null && leftShoulder != null){
-                var leftNeckAngle = getNeckAngle(leftEar, leftShoulder);
+            val leftNeckAngle = if(leftEar != null && leftShoulder != null){
+                val leftNeckAngle = getNeckAngle(leftEar, leftShoulder);
                 rect_overlay.drawLine(leftEar, leftShoulder)
                 builder.append("${leftNeckAngle.toInt()} 왼쪽 목  \n")
                 leftNeckAngle
             } else {
-                null
+                0
             }
             // 오른쪽 목 8,12
 
-            var rightNeckAngle = if(rightEar != null && rightShoulder != null){
-                var rightNeckAngle = getNeckAngle(rightEar, rightShoulder);
+            val rightNeckAngle = if(rightEar != null && rightShoulder != null){
+                val rightNeckAngle = getNeckAngle(rightEar, rightShoulder);
                 rect_overlay.drawLine(rightEar, rightShoulder)
                 builder.append("${rightNeckAngle.toInt()} 오른쪽 목 \n")
                 rightNeckAngle
-            }else{
-                null
+            }else {
+                0
             }
 
             //왼쪽 가슴 11,23,25
-            var leftChestAngle = if( leftShoulder != null && leftHip != null  && leftKnee != null){
-                var result = getAngle( leftShoulder, leftHip, leftKnee)
+            val leftChestAngle = if( leftShoulder != null && leftHip != null  && leftKnee != null){
+                val result = getAngle( leftShoulder, leftHip, leftKnee)
                 builder.append("${result.toInt()} 왼쪽 가슴 \n")
                 result
             } else {
@@ -394,8 +395,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 오른쪽 가슴 12,24,26
-            var rightChestAngle = if( rightShoulder != null && rightHip != null  && rightKnee != null){
-                var result = getAngle( rightShoulder, rightHip, rightKnee)
+            val rightChestAngle = if( rightShoulder != null && rightHip != null  && rightKnee != null){
+                val result = getAngle( rightShoulder, rightHip, rightKnee)
                 builder.append("${result.toInt()} 오른쪽 가슴 \n")
                 result
             } else {
@@ -403,8 +404,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             //왼쪽 다리 23,25,27
-            var leftLegAngle = if( leftHip != null && leftKnee != null  && leftAnkle != null){
-                var result = getAngle( leftHip, leftKnee, leftAnkle)
+            val leftLegAngle = if( leftHip != null && leftKnee != null  && leftAnkle != null){
+                val result = getAngle( leftHip, leftKnee, leftAnkle)
                 builder.append("${result.toInt()} 왼쪽 다리 \n")
                 result
             } else {
@@ -412,8 +413,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             //오른쪽 다리 24,26,28
-            var rightLegAngle = if( rightHip != null && rightKnee != null  && rightAnkle != null){
-                var result = getAngle( rightHip, rightKnee, rightAnkle)
+            val rightLegAngle = if( rightHip != null && rightKnee != null  && rightAnkle != null){
+                val result = getAngle( rightHip, rightKnee, rightAnkle)
                 builder.append("${result.toInt()} 오른쪽 다리 \n")
                 result
             } else {
@@ -421,21 +422,24 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 왼쪽 어깨 13,11,23
-
-            if( leftElbow != null && leftShoulder != null  && leftHip != null){
-                var leftShoulderAngle = getAngle( leftElbow, leftShoulder,leftHip);
+            val leftShoulderAngle = if( leftElbow != null && leftShoulder != null  && leftHip != null){
+                val leftShoulderAngle = getAngle( leftElbow, leftShoulder,leftHip);
                 builder.append("${leftShoulderAngle.toInt()} 왼쪽 어깨 \n")
+            }else {
+                0
             }
             // 오른쪽 어깨 14,12,24
 
-            if( rightElbow != null && rightShoulder != null  && rightHip != null){
-                var rightShoulderAngle = getAngle( rightElbow, rightShoulder,rightHip);
+            val rightShoulderAngle= if( rightElbow != null && rightShoulder != null  && rightHip != null){
+                val rightShoulderAngle = getAngle( rightElbow, rightShoulder,rightHip);
                 builder.append("${rightShoulderAngle.toInt()} 오른쪽 어깨 \n")
+            }else {
+                0
             }
 
             // 왼쪽 팔 11,13,15
-            var leftArmAngle = if( leftShoulder != null && leftElbow != null  && leftWrist != null){
-                var result = getAngle( leftShoulder, leftElbow, leftWrist)
+            val leftArmAngle = if( leftShoulder != null && leftElbow != null  && leftWrist != null){
+                val result = getAngle( leftShoulder, leftElbow, leftWrist)
                 builder.append("${result.toInt()} 왼쪽 팔 \n")
                 result
             } else {
@@ -443,8 +447,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             // 오른쪽 팔 12,14,16
-            var rightArmAngle = if( rightShoulder != null && rightElbow != null  && rightWrist != null){
-                var result = getAngle( rightShoulder, rightElbow,rightWrist)
+            val rightArmAngle = if( rightShoulder != null && rightElbow != null  && rightWrist != null){
+                val result = getAngle( rightShoulder, rightElbow,rightWrist)
                 builder.append("${result.toInt()} 오른쪽 팔 \n")
                 result
             } else {
@@ -452,40 +456,88 @@ class MainActivity : AppCompatActivity() {
             }
 
 
-            thread {
 
-                val resultCSV = CsvData()
-                resultCSV.log()
 
-                resultCSV.dataGet()?.get(0)
+
+//            thread {
+
+//                resultCSV.log()
+
+//                Log.i("read", resultCSV.dataGet()?.get(0)?.get(1).toString())
+
 
 //                val dataRe = csvRead()
 //
 //                Log.i("data_re", dataRe.toString())
 //                dataRe?.get(0)
 
-                if (leftNeckAngle != null && rightNeckAngle != null) {
-                    if(
-                        (leftNeckAngle.toInt() in 103 .. 109 ) &&
-                        (rightNeckAngle.toInt() in 103 .. 109 )){
+//                if (leftNeckAngle != null && rightNeckAngle != null) {
+//                    if(
+//                        (leftNeckAngle.toInt() in 103 .. 109 ) &&
+//                        (rightNeckAngle.toInt() in 103 .. 109 )){
+//
+//                        if(
+//                            (leftNeckAngle.toInt() in 103 .. 109 ) &&
+//                            (rightNeckAngle.toInt() in 61 .. 67 ) &&
+//                            (leftChestAngle.toInt() in 169 .. 175 ) &&
+//                            (rightChestAngle.toInt() in 155 .. 161 ) &&
+//                            (leftLegAngle.toInt() in 167 .. 173 ) &&
+//                            (rightLegAngle.toInt() in 149 .. 155 ) &&
+//                            (leftArmAngle.toInt() in 35 .. 41 ) &&
+//                            (rightArmAngle in 90 .. 96 )
+//                        )
+//                        {
+//                            Toast.makeText(this@MainActivity, "일치합니다", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+//                }
+//            }
 
-                        if(
-                            (leftNeckAngle.toInt() in 103 .. 109 ) &&
-                            (rightNeckAngle.toInt() in 61 .. 67 ) &&
-                            (leftChestAngle.toInt() in 169 .. 175 ) &&
-                            (rightChestAngle.toInt() in 155 .. 161 ) &&
-                            (leftLegAngle.toInt() in 167 .. 173 ) &&
-                            (rightLegAngle.toInt() in 149 .. 155 ) &&
-                            (leftArmAngle.toInt() in 35 .. 41 ) &&
-                            (rightArmAngle in 90 .. 96 )
-                        )
-                        {
+
+            thread{
+                val resultCSV = CsvData()
+                val trueLeftNeckAngle = resultCSV.dataGet()?.get(i)?.get(1)?.toInt()
+                val trueRightNeckAngle = resultCSV.dataGet()?.get(i)?.get(2)?.toInt()
+                val trueLeftChestAngle = resultCSV.dataGet()?.get(i)?.get(3)?.toInt()
+                val trueRightChestAngle = resultCSV.dataGet()?.get(i)?.get(4)?.toInt()
+                val trueLeftLegAngle = resultCSV.dataGet()?.get(i)?.get(5)?.toInt()
+                val trueRightLegAngle = resultCSV.dataGet()?.get(i)?.get(6)?.toInt()
+                val trueLeftShoulderAngle = resultCSV.dataGet()?.get(i)?.get(7)?.toInt()
+                val trueRightShoulderAngle = resultCSV.dataGet()?.get(i)?.get(8)?.toInt()
+                val trueLeftArmAngle = resultCSV.dataGet()?.get(i)?.get(9)?.toInt()
+                val trueRightArmAngle = resultCSV.dataGet()?.get(i)?.get(10)?.toInt()
+                i++
+
+                Log.i("sco read", resultCSV.dataGet()?.get(0).toString())
+                Log.i("sco read", trueLeftNeckAngle.toString())
+
+                val err = 10
+
+//                if (leftNeckAngle != null && rightNeckAngle != null&&leftChestAngle != null&& rightChestAngle != null
+//                    && leftLegAngle != null&& rightLegAngle != null&& leftArmAngle != null&& leftShoulderAngle != null
+//                    && rightShoulderAngle != null&& rightArmAngle != null) {
+                    if (trueLeftNeckAngle != null &&trueRightNeckAngle != null &&trueLeftChestAngle != null &&trueRightChestAngle != null
+                        &&trueLeftLegAngle != null &&trueRightLegAngle != null &&trueLeftShoulderAngle != null &&trueRightShoulderAngle != null
+                        &&trueLeftArmAngle != null &&trueRightArmAngle != null) {
+                        if((leftNeckAngle.toInt() in (trueLeftNeckAngle - err..trueLeftNeckAngle + err)) &&
+                            (rightNeckAngle.toInt() in (trueRightNeckAngle - err..trueRightNeckAngle + err)) &&
+                            (leftChestAngle.toInt() in (trueLeftChestAngle - err..trueLeftChestAngle + err)) &&
+                            (rightChestAngle.toInt() in (trueRightChestAngle - err..trueRightChestAngle + err)) &&
+                            (leftLegAngle.toInt() in (trueLeftLegAngle - err..trueLeftLegAngle + err)) &&
+                            (rightLegAngle.toInt() in (trueRightLegAngle - err..trueRightLegAngle + err)) &&
+                            (leftShoulderAngle in (trueLeftShoulderAngle - err..trueLeftShoulderAngle + err)) &&
+                            (rightShoulderAngle in (trueRightShoulderAngle - err..trueRightShoulderAngle + err)) &&
+                            (leftArmAngle.toInt() in (trueLeftArmAngle - err..trueLeftArmAngle + err)) &&
+                            (rightArmAngle.toInt() in (trueRightArmAngle - err..trueRightArmAngle + err))
+                        ){
+                            j++
+                            Log.i("sco", j.toString())
                             Toast.makeText(this@MainActivity, "일치합니다", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }
-            }
 
+//                }
+            }
 
 
 
